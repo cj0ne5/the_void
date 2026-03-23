@@ -10,5 +10,9 @@ COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 RUN pip install gunicorn
 COPY . .
-#RUN python manage.py collectstatic --noinput
-CMD [ "gunicorn", "-b 0.0.0.0:8000", "the_void.wsgi:application", "--log-level=debug" ]
+
+# Copy and set up entrypoint
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+ENTRYPOINT ["/entrypoint.sh"]
