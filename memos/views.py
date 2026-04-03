@@ -3,6 +3,8 @@ from openai import OpenAI
 from django.conf import settings
 from django.shortcuts import render, redirect
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import VoiceMemo
 from django.core.files.storage import default_storage
 from django.shortcuts import get_object_or_404, render
@@ -69,15 +71,16 @@ def input_to_memo(transcript):
         print("Failed to parse LLM reply as JSON:", reply)
         # You could log this, alert yourself, or fall back to your old parsing logic here
 
-
+@login_required
 def memo_detail_view(request, memo_id):
     memo = get_object_or_404(VoiceMemo, id=memo_id)
     return render(request, "memo_detail.html", {"memo": memo})
 
-
+@login_required
 def new_memo_text_view(request):
     if request.method == "POST":
         memo = VoiceMemo()
+        memo.user = request.user
         memo.save()
 
         transcript = request.POST["text"]
@@ -94,6 +97,7 @@ def new_memo_text_view(request):
 
 
 @csrf_exempt
+@login_required
 def upload_view(request):
     if request.method == "POST":
         audio = request.FILES["audio"]
@@ -132,14 +136,17 @@ def upload_view(request):
     return render(request, "upload.html")
 
 
-class MemoListView(ListView):
+class MemoListView(LoginRequiredMixin,ListView):
     model = VoiceMemo
     template_name = "memo_list.html"
     context_object_name = "memos"
     ordering = ["-created_at"]  # Most recent first
 
+    def get_queryset(self):
+        return VoiceMemo.objects.filter(user=self.request.user)
 
-class MemoDetailView(DetailView):
+
+class MemoDetailView(LoginRequiredMixin,DetailView):
     model = VoiceMemo
     template_name = "memo_detail.html"
     context_object_name = "memo"
