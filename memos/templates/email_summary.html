@@ -1,16 +1,38 @@
-<table border="1" cellpadding="5" cellspacing="0">
+<h2>Your Daily Voice Memo Summary</h2>
+
+<p>Hi {{ user.username}},</p>
+
+{% if memos %}
+
+<p>In the past 24 hours, you recorded {{memos | length}} memo{{ memos | length |pluralize }}. Here's a summary</p>
+
+<table border="1" cellpadding="5" cellspacing="0" style="border-collapse: collapse; width: 100%;">
     <tr>
         <th>Summary</th>
         <th>Time</th>
-        <th>Transcript</th>
         <th>LLM Response</th>
+        <th>Details</th>
     </tr>
     {% for memo in memos %}
     <tr>
         <td>{{ memo.summary|default:"(No summary)" }}</td>
         <td>{{ memo.created_at|date:"H:i" }}</td>
-        <td><a href="http://yourdomain.local/memos/{{ memo.id }}">View</a></td>
         <td>{{ memo.llm_response|truncatechars:150 }}</td>
+        <td><a href="https://void.arlingtonslasher.duckdns.org/memos/{{ memo.id }}">View</a></td>
     </tr>
     {% endfor %}
 </table>
+
+{% else %}
+    <p>You didn't record any voice memos in the past 24 hours. Don't forget
+        that the void is here any time you have a stray thought you don't want to lose!
+    </p>
+
+
+{% endif %}
+
+<p>
+    <a href="https://void.arlingtonslasher.duckdns.org/upload/">Record a memo now</a>
+</p>
+
+<p><a href="https://void.arlingtonslasher.duckdns.org/">View your memo history</a></p>

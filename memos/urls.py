@@ -6,4 +6,5 @@ urlpatterns = [
     path("upload_text/", new_memo_text_view, name="upload_text"),
     path("", MemoListView.as_view(), name="memo_list"),
     path("memos/<int:pk>/", MemoDetailView.as_view(), name="memo_detail"),
+    path("memos/delete/<int:pk>/", MemoDeleteView.as_view(), name="memo_delete"),
 ]

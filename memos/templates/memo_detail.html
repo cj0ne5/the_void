@@ -8,5 +8,6 @@
         <p><strong>LLM Response:</strong><br>{{ memo.llm_response }}</p>
     {% endif %}
     <p><a href="{% url 'memo_list' %}">← Back to all memos</a></p>
+    <div><a href="{% url 'memo_delete' memo.pk %}">Delete This Memo</a></div>
 
 {% endblock %}

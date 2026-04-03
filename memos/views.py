@@ -6,10 +6,12 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import VoiceMemo
+from django.urls import reverse, reverse_lazy
 from django.core.files.storage import default_storage
 from django.shortcuts import get_object_or_404, render
-from django.views.generic import ListView, DetailView
+from django.views.generic import ListView, DetailView, DeleteView
 import json
+from memos.owner import OwnerCreateView, OwnerDeleteView, OwnerDetailView, OwnerListView, OwnerDeleteView, OwnerUpdateView
 
 client = OpenAI(api_key=settings.OPENAI_API_KEY)
 
@@ -69,7 +71,6 @@ def input_to_memo(transcript):
 
     except json.JSONDecodeError:
         print("Failed to parse LLM reply as JSON:", reply)
-        # You could log this, alert yourself, or fall back to your old parsing logic here
 
 @login_required
 def memo_detail_view(request, memo_id):
@@ -102,6 +103,7 @@ def upload_view(request):
     if request.method == "POST":
         audio = request.FILES["audio"]
         memo = VoiceMemo(audio_file=audio)
+        memo.user = request.user
         memo.save()
 
         # Save file locally for Whisper API
@@ -150,3 +152,11 @@ class MemoDetailView(LoginRequiredMixin,DetailView):
     model = VoiceMemo
     template_name = "memo_detail.html"
     context_object_name = "memo"
+
+
+class MemoDeleteView(OwnerDeleteView):
+    model = VoiceMemo
+    context_object_name = "memo"
+
+    def get_success_url(self):
+        return reverse_lazy("memo_list")

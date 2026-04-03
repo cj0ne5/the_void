@@ -6,6 +6,7 @@
             <div class="summary">{{ memo.summary|default:"(No summary)" }}</div>
             <div>{{ memo.created_at|date:"M d, H:i" }}</div>
             <div><a href="{% url 'memo_detail' memo.pk %}">View details</a></div>
+            <div><a href="{% url 'memo_delete' memo.pk %}">Delete</a></div>
             <div>{{ memo.llm_response|truncatechars:150 }}</div>
         </div>
     {% empty %}
