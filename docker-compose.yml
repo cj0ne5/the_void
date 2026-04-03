@@ -12,6 +12,43 @@ services:
       DBUSER: admin
       DBNAME: postgres
       DBPASS: LocalPasswordOnly
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - internal
+
+  scheduler:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        IMAGE: python:3.11
+    command: >
+      sh -c "
+      echo 'Scheduler started';
+      while true; do
+        now=$(date +%s);
+        target=$(date -d '20:00' +%s);
+
+        if [ $now -ge $target ]; then
+          target=$(date -d 'tomorrow 20:00' +%s);
+        fi;
+
+        sleep_seconds=$((target - now));
+        echo \"Sleeping for $sleep_seconds seconds until 8pm...\";
+        sleep $sleep_seconds;
+
+        echo 'Running daily summaries...';
+        python manage.py send_summaries;
+      done
+      "
+    environment:
+      DBHOST: postgres
+      DBUSER: admin
+      DBNAME: postgres
+      DBPASS: LocalPasswordOnly
     depends_on:
       postgres:
         condition: service_healthy
