@@ -10,12 +10,14 @@
     <nav>
             <div>
                 {% if user.is_authenticated %}
+                <p>Hello, {{user.username}} 
                 <form method="post" action="{% url 'account_logout' %}?next={{ request.path }}" class="topleft">
                     {% csrf_token %}
                     <button type="submit" style="background:none; border:none; padding:0; text-decoration:underline;">
-                        Logout
+                        (Logout)
                     </button>
                 </form>
+              </p>
                 {% else %}
                 <a href="{% url 'account_login' %}?next={{ request.path }}">Login</a> |
                 <a href="{% url 'account_signup' %}?next={{ request.path }}">Sign up</a>

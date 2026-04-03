@@ -17,6 +17,8 @@
   <button id="playBtn" disabled>Play Recording</button>
   <audio id="audioPreview" controls style="display:none;"></audio>
 
+  <p><a href="{% url 'memo_list' %}">← Back to all memos</a></p>
+
   <script>
     let mediaRecorder;
     let audioChunks = [];
