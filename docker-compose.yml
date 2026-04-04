@@ -25,19 +25,20 @@ services:
       dockerfile: Dockerfile
       args:
         IMAGE: python:3.11
+    entrypoint: ""
     command: >
       sh -c "
       echo 'Scheduler started';
       while true; do
         now=$$(date +%s);
-        target=$$(date -d '20:00' +%s);
+        target=$$(date -d '22:00' +%s);
 
         if [ $$now -ge $$target ]; then
-          target=$$(date -d 'tomorrow 20:00' +%s);
+          target=$$(date -d 'tomorrow 22:00' +%s);
         fi;
 
         sleep_seconds=$$((target - now));
-        echo \"Sleeping for $$sleep_seconds seconds until 8pm...\";
+        echo \"Sleeping for $$sleep_seconds seconds until 6pm...\";
         sleep $$sleep_seconds;
 
         echo 'Running daily summaries...';
